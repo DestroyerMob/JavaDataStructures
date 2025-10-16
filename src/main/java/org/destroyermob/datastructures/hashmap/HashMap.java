@@ -35,17 +35,40 @@ public class HashMap<K, V> implements HashMapInterface<K, V> {
 
     @Override
     public void put(K key, V value) {
-        keyValuePairs[hash(key) % keyValuePairs.length].add(new Entry<>(key, value));
+        size++;
+        boolean collision = false;
+        int index = hash(key) % keyValuePairs.length;
+        if (keyValuePairs[index] == null)
+            keyValuePairs[index] = new ArrayList<>();
+        else {
+            for (Entry<K, V> entry : keyValuePairs[index]) {
+                if (entry.key.equals(key))
+                    collision = true;
+            }
+        }
+        if (!collision)
+            keyValuePairs[index].add(new Entry<>(key, value));
+        else
+            System.out.println("Did not add key: " + key + ", key already exists");
     }
 
     @Override
     public V get(K key) {
+        for (Entry<K, V> entry : keyValuePairs[hash(key) % keyValuePairs.length]) {
+            if (entry.key.equals(key)) {
+                return entry.value;
+            }
+        }
         return null;
     }
 
     @Override
     public void remove(K key) {
-
+        for (Entry<K, V> entry : keyValuePairs[hash(key) % keyValuePairs.length]) {
+            if (entry.key.equals(key)) {
+                keyValuePairs[hash(key) % keyValuePairs.length].remove(entry);
+            }
+        }
     }
 
     private static class Entry<K, V> {
