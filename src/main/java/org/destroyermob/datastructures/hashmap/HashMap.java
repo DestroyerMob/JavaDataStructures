@@ -42,8 +42,10 @@ public class HashMap<K, V> implements HashMapInterface<K, V> {
             keyValuePairs[index] = new ArrayList<>();
         else {
             for (Entry<K, V> entry : keyValuePairs[index]) {
-                if (entry.key.equals(key))
+                if (entry.key.equals(key)) {
                     collision = true;
+                    break;
+                }
             }
         }
         if (!collision)
@@ -64,10 +66,13 @@ public class HashMap<K, V> implements HashMapInterface<K, V> {
 
     @Override
     public void remove(K key) {
-        for (Entry<K, V> entry : keyValuePairs[hash(key) % keyValuePairs.length]) {
-            if (entry.key.equals(key)) {
-                keyValuePairs[hash(key) % keyValuePairs.length].remove(entry);
-            }
+        if (keyValuePairs[hash(key) % keyValuePairs.length] != null) {
+            keyValuePairs[hash(key) % keyValuePairs.length].removeIf(entry -> {
+                if (entry.key.equals(key)) {
+                    size--;
+                    return true;
+                } return false;
+            });
         }
     }
 
